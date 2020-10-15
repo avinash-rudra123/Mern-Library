@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 class TableRow extends Component {
   constructor(props) {
     super(props);
@@ -95,5 +97,4 @@ class TableRow extends Component {
     );
   }
 }
-
 export default TableRow;

@@ -44,7 +44,7 @@ export const login = (user) => {
 // };
 export const logout = async (user) => {
   return await axios
-    .get("http://localhost:8000/api/logout", user)
+    .get(`${API}/logout`, user)
     .then((response) => localStorage.removeItem("jwt", response.data))
     .catch((err) => {
       console.log(err);
