@@ -11,7 +11,6 @@ const adminRoutes = require("./routes/Admin");
 const app = express();
 require("dotenv").config();
 const mongourl =
-  process.env.mongourl ||
   "mongodb+srv://atlas123:ravi123@cluster0.ex4b5.mongodb.net/Library?retryWrites=true&w=majority";
 mongoose
   .connect(mongourl, {
