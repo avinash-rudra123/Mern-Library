@@ -19,9 +19,7 @@ class Display extends Component {
         console.log(error);
       });
   }
-  componentDidUpdate(){
-    
-  }
+  componentDidUpdate() {}
   tabRow() {
     return this.state.book.map((Object, i) => {
       return <TableRow obj={Object} key={i} />;
@@ -72,7 +70,7 @@ class Display extends Component {
                   onClick={(e) => {
                     e.preventDefault();
                     axios
-                      .get("http://localhost:8000/api/books?limit=undefined")
+                      .get("books?limit=undefined")
                       .then((response) => {
                         console.log(response.data);
                       })

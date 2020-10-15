@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import TableRow from "./TableRow";
-import { API } from "../url";
 class GetProduct extends Component {
   constructor(props) {
     super(props);
@@ -11,7 +10,7 @@ class GetProduct extends Component {
   }
   componentDidMount() {
     axios
-      .get(`${API}/list/book`)
+      .get("/list/book")
       .then((response) => {
         this.setState({ book: response.data });
       })
@@ -78,7 +77,7 @@ class GetProduct extends Component {
                   <button
                     onClick={() =>
                       axios
-                        .get("http://localhost:8000/api/logout")
+                        .get("/logout")
                         .then((response) =>
                           localStorage.removeItem("jwt", response.data)
                         )

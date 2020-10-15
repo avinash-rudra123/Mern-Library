@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { API } from "../url";
 import { Link } from "react-router-dom";
 class Edit extends Component {
   constructor(props) {
@@ -31,7 +30,7 @@ class Edit extends Component {
       stock: this.state.stock,
     };
     axios
-      .put(`${API}/update/books/` + this.props.match.params.id, user)
+      .put("/update/books/" + this.props.match.params.id, user)
       .then((res) => console.log(res.data, user))
       .catch((err) => console.log(err));
     this.props.history.push("/admin/dashboard/getbook");
