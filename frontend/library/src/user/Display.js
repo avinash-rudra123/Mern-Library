@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import TableRow from "./TableRow";
-import { API } from "../url";
 class Display extends Component {
   constructor(props) {
     super(props);
@@ -11,7 +10,7 @@ class Display extends Component {
   }
   componentDidMount() {
     axios
-      .get(`${API}/list/book`)
+      .get("/api/list/book")
       .then((response) => {
         this.setState({ book: response.data });
       })

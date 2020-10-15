@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { API } from "../url";
 import axios from "axios";
 class TableRow extends Component {
   constructor(props) {
@@ -17,7 +16,7 @@ class TableRow extends Component {
         <td>{this.props.obj.stock}</td>
         <td>
           <Link
-            to={"/update/books/" + this.props.obj._id}
+            to={"/api/update/books/" + this.props.obj._id}
             className="btn btn-primary"
           >
             Edit
@@ -27,7 +26,7 @@ class TableRow extends Component {
           <button
             onClick={() =>
               axios
-                .delete(`${API}/delete/books/` + this.props.obj._id)
+                .delete("/api/delete/books/" + this.props.obj._id)
                 .then(() => this.props.deleteItem(this.props.obj._id))
                 .catch((err) => console.log(err, "eror occurred"))
             }

@@ -1,8 +1,8 @@
 import Axios from "axios";
-import { API } from "../url";
+
 import axios from "axios";
 export const signup = (user) => {
-  return fetch("/signup", {
+  return fetch("/api/signup", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -16,7 +16,7 @@ export const signup = (user) => {
     .catch((err) => console.log(err));
 };
 export const login = (user) => {
-  return fetch("/login", {
+  return fetch("/api//login", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -44,7 +44,7 @@ export const login = (user) => {
 // };
 export const logout = async (user) => {
   return await axios
-    .get("/logout", user)
+    .get("/api/logout", user)
     .then((response) => localStorage.removeItem("jwt", response.data))
     .catch((err) => {
       console.log(err);
@@ -69,7 +69,7 @@ export const isAthunticated = () => {
   }
 };
 export const Adminsignup = (user) => {
-  return fetch(`/admin/signup`, {
+  return fetch(`/api//admin/signup`, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -83,7 +83,7 @@ export const Adminsignup = (user) => {
     .catch((err) => console.log(err));
 };
 export const Adminlogin = (user) => {
-  return fetch(`/admin/login`, {
+  return fetch(`/api//admin/login`, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -97,7 +97,7 @@ export const Adminlogin = (user) => {
     .catch((err) => console.log(err));
 };
 export const createProduct = (formdata) => {
-  return Axios.post(`/book/add`, {
+  return Axios.post(`/api//book/add`, {
     title: formdata.title,
     ISBN: formdata.ISBN,
     author: formdata.author,

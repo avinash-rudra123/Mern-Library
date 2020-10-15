@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from "react";
 import axios from "axios";
 //import Row from "./Row";
-import { API } from "../url";
 class Activity extends Component {
   constructor(props) {
     super(props);
@@ -10,7 +9,7 @@ class Activity extends Component {
   }
   componentWillMount() {
     axios
-      .get(`${API}/activity`)
+      .get("api/activity")
       .then((response) => {
         this.setState({ activity: console.log(response.data) });
       })
