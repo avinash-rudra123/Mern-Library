@@ -23,7 +23,9 @@ class TableRow extends Component {
                 let user_id = localStorage.getItem("id");
                 console.log(user_id);
                 axios
-                  .post("/issueBook/" + this.props.obj._id + "/book/" + user_id)
+                  .post(
+                    "/api/issueBook/" + this.props.obj._id + "/book/" + user_id
+                  )
                   .then((response) => {
                     console.log(response.data);
                     alert("Issue book successfully");
@@ -46,7 +48,7 @@ class TableRow extends Component {
                 let user_id = localStorage.getItem("id");
                 console.log(user_id);
                 axios
-                  .post(`/books/return/${this.props.obj._id}/${user_id}`)
+                  .post(`/api/books/return/${this.props.obj._id}/${user_id}`)
                   .then((response) => {
                     console.log(response.data);
                     alert("Return successfully");
@@ -68,7 +70,7 @@ class TableRow extends Component {
                 let user_id = localStorage.getItem("id");
                 console.log(user_id);
                 axios
-                  .post(`/books/${this.props.obj._id}/renew/${user_id}`)
+                  .post(`/api/books/${this.props.obj._id}/renew/${user_id}`)
                   .then((response) => {
                     this.setState({ book: response.data });
                     console.log(response.data);

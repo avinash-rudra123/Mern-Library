@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-var port = process.env.PORT || 8000;
+var port = process.env.PORT || 7000;
 const cors = require("cors");
 var path = require("path");
 const bodyparser = require("body-parser");
@@ -10,10 +10,10 @@ const bookRoutes = require("./routes/Book");
 const adminRoutes = require("./routes/Admin");
 const app = express();
 require("dotenv").config();
-//const mongourl =
-// "mongodb+srv://atlas123:ravi123@cluster0.ex4b5.mongodb.net/Library?retryWrites=true&w=majority";
+const mongourl =
+  "mongodb+srv://atlas123:ravi123@cluster0.ex4b5.mongodb.net/Library?retryWrites=true&w=majority";
 mongoose
-  .connect(process.env.mongourl, {
+  .connect(mongourl, {
     useUnifiedTopology: true,
     useNewUrlParser: true,
     useCreateIndex: true,
