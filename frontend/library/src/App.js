@@ -25,7 +25,7 @@ function App() {
         {/* <Route path="/login" exact component={LoginValidation} /> */}
         <Route path="/admin/dashboard/create" exact component={Create} />
         <Route path="/admin/dashboard/getbook" exact component={GetProduct} />
-        <Route path="/update/books/:id" exact component={Edit} />
+        <Route path="/api/update/books/:id" exact component={Edit} />
         <Route path="/admin/signup" exact component={AdminSignup} />
         <Route path="/admin/login" exact component={AdminLogin} />
         <PrivateRoute path="/admin/login" exact component={PrivateRoute} />

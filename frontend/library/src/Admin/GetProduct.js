@@ -10,7 +10,7 @@ class GetProduct extends Component {
   }
   componentDidMount() {
     axios
-      .get("/list/book")
+      .get("/api/list/book")
       .then((response) => {
         this.setState({ book: response.data });
       })
@@ -36,7 +36,7 @@ class GetProduct extends Component {
       <div>
         <div>
           <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
-            <Link className="navbar-brand" to="admin/dashboard/getbook">
+            <Link className="navbar-brand" to="/admin/dashboard/getbook">
               Library ManageMent
             </Link>
             <Link className="navbar-brand m-4" to="/admin/dashboard/create">
@@ -77,7 +77,7 @@ class GetProduct extends Component {
                   <button
                     onClick={() =>
                       axios
-                        .get("/logout")
+                        .get("/api/logout")
                         .then((response) =>
                           localStorage.removeItem("jwt", response.data)
                         )

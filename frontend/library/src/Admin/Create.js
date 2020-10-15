@@ -30,7 +30,7 @@ class Create extends Component {
     console.log(newUser);
 
     createProduct(newUser).then((res) => {
-      this.props.history.push(`/admin/dashboard/getbook`);
+      this.props.history.push("/admin/dashboard/getbook");
     });
   };
   render() {
