@@ -20,8 +20,8 @@ const Login = () => {
     e.preventDefault();
     login({ email, password })
       .then((data) => {
-        if (data.error) {
-          setValues({ ...values, error: data.error, loading: false });
+        if (!data) {
+          setValues({ ...values, error: true, loading: false });
         } else {
           authenticate(data, () => {
             setValues({
@@ -29,8 +29,8 @@ const Login = () => {
               email: "",
               password: "",
             });
-            history.push("/user/dashboard");
           });
+          history.push("/user/dashboard");
         }
       })
       .catch(console.log("signin requets failed"));
