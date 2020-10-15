@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "node index.js",
-    "frontend": "npm start --prefix frontend/library"
+    "frontend": "npm start --prefix frontend/library",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend/library && npm run build --prefix frontend/library"
   },
   "author": "",
   "license": "ISC",
