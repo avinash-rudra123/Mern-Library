@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Book management",
   "main": "index.js",
+  "engines": {
+    "node": "12.13.x",
+    "npm": "6.x"
+  },
   "scripts": {
     "start": "node index.js",
     "frontend": "npm start --prefix frontend/library",
