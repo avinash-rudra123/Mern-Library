@@ -24,7 +24,7 @@ class Create extends Component {
       ISBN: this.state.ISBN,
       author: this.state.author,
       description: this.state.description,
-      categor: this.state.category,
+      category: this.state.category,
       stock: this.state.stock,
     };
     console.log(newUser);
@@ -93,7 +93,7 @@ class Create extends Component {
                 <input
                   type="number"
                   className="form-control"
-                  name="stcok"
+                  name="stock"
                   placeholder="Enter Stock"
                   onChange={this.onChange}
                 />

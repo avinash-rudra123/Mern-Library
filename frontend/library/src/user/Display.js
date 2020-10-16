@@ -8,7 +8,7 @@ class Display extends Component {
     this.state = { book: [] };
     this.tabRow = this.tabRow.bind(this);
   }
-  componentDidMount() {
+  componentWillMount() {
     axios
       .get("/api/list/book")
       .then((response) => {
@@ -30,7 +30,7 @@ class Display extends Component {
       <div>
         <div>
           <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
-            <Link className="navbar-brand" to="/">
+            <Link className="navbar-brand" to="/user/dashboard">
               Library ManageMent
             </Link>
             <button

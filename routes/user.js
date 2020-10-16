@@ -1,10 +1,12 @@
 const express = require("express");
 const { check } = require("express-validator");
-const crypto = require("crypto");
+// const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+// const nodemailer = require("nodemailer");
 const validateSchema = require("../middleware/user");
-const { validationResult } = require("express-validator");
+const { validationResult, body } = require("express-validator");
+const userController = require("../controller/user");
 const User = require("../models/user");
 const Book = require("../models/book");
 const issueUser = require("../models/issue");
@@ -206,42 +208,49 @@ router.post("/issueBook/:book_id/book/:user_id", async (req, res) => {
   try {
     const findBook = await Book.findById(req.params.book_id);
     const userInfo = await User.findById(req.params.user_id);
-    findBook.stock -= 1;
-    const issue = new issueUser({
-      book_info: {
-        id: findBook._id,
-        title: findBook.title,
-        ISBN: findBook.ISBN,
-        description: findBook.description,
-        category: findBook.category,
-      },
-      user_id: {
-        id: userInfo._id,
-        name: userInfo.name,
-      },
-    });
-    userInfo.bookIssueInfo.push(findBook._id);
-    const handleUser = new Handle({
-      info: {
-        id: findBook._id,
-        title: findBook.title,
-      },
-      category: "Issue",
-      time: {
-        id: issue._id,
-        issueDate: issue.book_info.issueDate,
-        returnDate: issue.book_info.returnDate,
-      },
-      user_id: {
-        id: userInfo._id,
-        username: userInfo.name,
-      },
-    });
-    await issue.save();
-    const booksaved = await findBook.save();
-    const usersaved = await userInfo.save();
-    const handleuserSaved = await handleUser.save();
-    return res.status(201).json(issue);
+    if (findBook.stock < 1) {
+      return res.status(404).json("No book is there");
+    } else {
+      findBook.stock -= 1;
+      const issue = new issueUser({
+        book_info: {
+          id: findBook._id,
+          title: findBook.title,
+          ISBN: findBook.ISBN,
+          description: findBook.description,
+          category: findBook.category,
+          stock: findBook.stock,
+        },
+        user_id: {
+          id: userInfo._id,
+          name: userInfo.name,
+        },
+      });
+      userInfo.bookIssueInfo.push(findBook._id);
+      const handleUser = new Handle({
+        info: {
+          id: findBook._id,
+          title: findBook.title,
+        },
+        category: "Issue",
+        time: {
+          id: issue._id,
+          issueDate: issue.book_info.issueDate,
+          returnDate: issue.book_info.returnDate,
+        },
+        user_id: {
+          id: userInfo._id,
+          username: userInfo.name,
+        },
+      });
+      const issuebook = await issue.save();
+      await findBook.save();
+      await userInfo.save();
+      await handleUser.save();
+      return res
+        .status(201)
+        .json({ msg: "issue book successfully", issuebook, findBook });
+    }
   } catch (err) {
     return res.status(404).json({ msg: "Cannot issue book" });
   }
@@ -254,33 +263,37 @@ router.post("/books/:book_id/renew/:user_id", async (req, res, next) => {
       "book_info.id": req.params.book_id,
     };
     const issue = await issueUser.findOne(Obj);
-    let time = issue.book_info.returnDate.getTime();
-    issue.book_info.returnDate = time + 7 * 24 * 60 * 60 * 1000;
-    issue.book_info.isRenewed = true;
-    const handleUser = new Handle({
-      info: {
-        id: issue._id,
-        title: issue.book_info.title,
-      },
-      category: "renew",
-      time: {
-        id: issue._id,
-        issueDate: issue.book_info.issueDate,
-        returnDate: issue.book_info.returnDate,
-      },
-      user_id: {
-        id: user._id,
-        name: user.name,
-      },
-    });
+    if (issue.book_info.stock < 1) {
+      return res.status(404).json("you cannot renew the book ");
+    } else {
+      let time = issue.book_info.returnDate.getTime();
+      issue.book_info.returnDate = time + 7 * 24 * 60 * 60 * 1000;
+      issue.book_info.isRenewed = true;
+      const handleUser = new Handle({
+        info: {
+          id: issue._id,
+          title: issue.book_info.title,
+        },
+        category: "renew",
+        time: {
+          id: issue._id,
+          issueDate: issue.book_info.issueDate,
+          returnDate: issue.book_info.returnDate,
+        },
+        user_id: {
+          id: user._id,
+          name: user.name,
+        },
+      });
 
-    const issued = await issue.save();
-    console.log(issued);
-    await handleUser.save();
-    res.status(201).json({
-      msg: "Renew successfully",
-    });
-    next();
+      await issue.save();
+      await handleUser.save();
+      res.status(201).json({
+        msg: "Renew successfully",
+        issue,
+      });
+      next();
+    }
   } catch (err) {
     return res.status(403).send({
       msg: "success failed",
@@ -294,31 +307,34 @@ router.post("/books/return/:id/:user_id", async (req, res, next) => {
     const index = user.bookIssueInfo.indexOf(req.params.id);
     console.log(index);
     const book = await Book.findById(book_id);
-    book.stock += 1;
-    await book.save();
-    const issue = await issueUser.findOne({ "user_id.id": user._id });
-    console.log(issue);
-    await issue.remove();
-    const detail = user.bookIssueInfo.splice(index, 1);
-    await user.save();
-    const handleUser = new Handle({
-      info: {
-        id: issue.book_info.id,
-        title: issue.book_info.title,
-      },
-      category: "return",
-      time: {
-        id: issue._id,
-        issueDate: issue.book_info.issueDate,
-        returnDate: issue.book_info.returnDate,
-      },
-      user_id: {
-        id: user._id,
-        name: user.name,
-      },
-    });
-    await handleUser.save();
-    return res.status(201).json({ msg: "successfully" });
+    if (book.stock < 1) {
+      return res.status(404).json("u cannot return the book");
+    } else {
+      book.stock += 1;
+      await book.save();
+      const issue = await issueUser.findOne({ "user_id.id": user._id });
+      await issue.remove();
+      user.bookIssueInfo.splice(index, 1);
+      await user.save();
+      const handleUser = new Handle({
+        info: {
+          id: issue.book_info.id,
+          title: issue.book_info.title,
+        },
+        category: "return",
+        time: {
+          id: issue._id,
+          issueDate: issue.book_info.issueDate,
+          returnDate: issue.book_info.returnDate,
+        },
+        user_id: {
+          id: user._id,
+          name: user.name,
+        },
+      });
+      await handleUser.save();
+      return res.status(201).json({ msg: "successfully" });
+    }
   } catch (err) {
     return res.status(403).json("error occured");
   }
@@ -385,7 +401,7 @@ router.delete("/delete/books/:id", async (req, res) => {
 //           port: 2525,
 //           auth: {
 //             user: "gupta95031p@gmail.com",
-//             pass: "@avi1L/#&&123",
+//             pass: "",
 //           },
 //         });
 //         let currentTime = new Date();
@@ -485,5 +501,8 @@ router.get("/logout", auth, (req, res) => {
     res.json({ message: "User looged out!" });
   });
 });
-
+router.get("/user/:page", userController.getUserDashboard);
+router.post("/books/:book_id/issue/:user_id", userController.postIssueBook);
+router.post("/books/:book_id/renew/:user_id", userController.postRenewBook);
+router.post("/books/:book_id/return/:user_id", userController.postReturnBook);
 module.exports = router;

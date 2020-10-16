@@ -16,7 +16,7 @@ export const signup = (user) => {
     .catch((err) => console.log(err));
 };
 export const login = (user) => {
-  return fetch("/api//login", {
+  return fetch("/api/login", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -69,7 +69,7 @@ export const isAthunticated = () => {
   }
 };
 export const Adminsignup = (user) => {
-  return fetch(`/api//admin/signup`, {
+  return fetch(`/api/admin/signup`, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -83,7 +83,7 @@ export const Adminsignup = (user) => {
     .catch((err) => console.log(err));
 };
 export const Adminlogin = (user) => {
-  return fetch(`/api//admin/login`, {
+  return fetch(`/api/admin/login`, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -97,7 +97,7 @@ export const Adminlogin = (user) => {
     .catch((err) => console.log(err));
 };
 export const createProduct = (formdata) => {
-  return Axios.post(`/api//book/add`, {
+  return Axios.post(`/api/book/add`, {
     title: formdata.title,
     ISBN: formdata.ISBN,
     author: formdata.author,

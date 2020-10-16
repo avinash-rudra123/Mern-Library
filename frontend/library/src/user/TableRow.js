@@ -1,7 +1,5 @@
 import React, { Component, Fragment } from "react";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 class TableRow extends Component {
   constructor(props) {
     super(props);
@@ -24,7 +22,7 @@ class TableRow extends Component {
                 console.log(user_id);
                 axios
                   .post(
-                    "/api/issueBook/" + this.props.obj._id + "/book/" + user_id
+                    "/api/books/" + this.props.obj._id + "/issue/" + user_id
                   )
                   .then((response) => {
                     console.log(response.data);
@@ -48,7 +46,7 @@ class TableRow extends Component {
                 let user_id = localStorage.getItem("id");
                 console.log(user_id);
                 axios
-                  .post(`/api/books/return/${this.props.obj._id}/${user_id}`)
+                  .post(`/api/books/${this.props.obj._id}/return/${user_id}`)
                   .then((response) => {
                     console.log(response.data);
                     alert("Return successfully");

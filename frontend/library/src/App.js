@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Dashboard from "./DashBoard/DashBoard";
 import SignUp from "./user/SignUp";
 import Login from "./user/Login";
@@ -11,8 +11,8 @@ import Create from "./Admin/Create";
 import GetProduct from "./Admin/GetProduct";
 import AdminLogin from "./auth/AdminLogin";
 import Activity from "./Admin/Activity";
-//import LoginValidation from "./user/LoginValidation";
-//import Menu from "./DashBoard/Menu";
+import Reset from "./user/Reset";
+import NewPassword from "./user/NewPassword";
 import "./App.css";
 function App() {
   return (
@@ -31,6 +31,8 @@ function App() {
         <PrivateRoute path="/admin/login" exact component={PrivateRoute} />
         <Route path="/activity" exact component={Activity} />
         <Route path="/user/dashboard" component={Display} />
+        <Route path="/reset" component={Reset} />
+        <Route path="/newpassword" component={NewPassword} />
       </Switch>
     </BrowserRouter>
   );

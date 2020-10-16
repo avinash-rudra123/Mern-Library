@@ -26,7 +26,7 @@ class Edit extends Component {
       ISBN: this.state.ISBN,
       author: this.state.author,
       description: this.state.description,
-      categor: this.state.category,
+      category: this.state.category,
       stock: this.state.stock,
     };
     axios

@@ -1,34 +1,50 @@
 import React, { Component, Fragment } from "react";
 import axios from "axios";
-//import Row from "./Row";
 class Activity extends Component {
   constructor(props) {
     super(props);
     this.state = { activity: [] };
-    // this.activityRow = this.activityRow.bind(this);
   }
   componentWillMount() {
     axios
-      .get("api/activity")
+      .get("/api/activity")
       .then((response) => {
-        this.setState({ activity: console.log(response.data) });
+        this.setState({ activity: response.data });
       })
       .catch(function (error) {
         console.log(error);
       });
   }
-  // activityRow() {
-  //   return this.state.activity.map((action, i) => {
-  //     return <Row act={action} key={i} />;
-  //   });
-  // }
   render() {
     return (
-      <ul>
-        {this.state.activity.map((item, i) => {
-          return <li key={i}>{item.info.title}</li>;
-        })}
-      </ul>
+      <Fragment>
+        <h2 align="center"> Activity LOG</h2>
+        <table
+          className="table table-striped"
+          style={{ marginTop: 20, backgroundColor: "grey" }}
+        >
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>ReturnDate</th>
+              <th>issueDate</th>
+              <th>Entry-Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.activity.map((c, i) => {
+              return (
+                <tr key={i}>
+                  <td>{c.info.title}</td>
+                  <td>{c.time.issueDate}</td>
+                  <td>{c.time.returnDate}</td>
+                  <td>{c.entryTime}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </Fragment>
     );
   }
 }

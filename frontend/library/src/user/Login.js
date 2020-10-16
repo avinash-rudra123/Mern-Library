@@ -120,7 +120,7 @@ const Login = () => {
               {/* // {direct()} */}
               <div className="mt-2 text-dark">
                 <div className="mt-2 text-dark">
-                  <Link to="/forget" className="text-primary">
+                  <Link to="/reset" className="text-primary">
                     Forget Password ?
                   </Link>
                 </div>
