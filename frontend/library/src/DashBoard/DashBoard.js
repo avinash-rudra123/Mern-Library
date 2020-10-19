@@ -1,14 +1,14 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
-import { isAthunticated, logout } from "../auth/index";
+import { isAuthenticated } from "../auth/index";
+import { logout } from "../auth/index";
 function DashBoard() {
-  // const { user } = isAthunticated();
-  const { user } = logout();
+  const { token } = isAuthenticated();
   return (
     <Fragment>
       <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
         <Link className="navbar-brand" to="/">
-          Library ManageMent
+          Library Management
         </Link>
         <button
           className="navbar-toggler"
@@ -32,7 +32,7 @@ function DashBoard() {
                 Admin <span className="sr-only">(current)</span>
               </Link>
             </li>
-            {!isAthunticated() && (
+            {!isAuthenticated() && (
               <Fragment>
                 <li className="nav-item">
                   <Link className="nav-link" to="/signup">
@@ -46,23 +46,19 @@ function DashBoard() {
                 </li>
               </Fragment>
             )}
-            {isAthunticated() && (
-              <li className="nav-item">
+
+            <li className="nav-item">
+              {isAuthenticated() && (
                 <Link className="nav-link" to="/">
-                  <button type="submit" onClick={logout(user)}>
+                  <button type="submit" onClick={logout()}>
                     SignOut
                   </button>
                 </Link>
-              </li>
-            )}
+              )}
+            </li>
           </ul>
         </div>
       </nav>
-      <img
-        src="https://4.imimg.com/data4/DB/QV/MY-29214035/library-management-system-500x500.jpg"
-        alt=""
-        className="img_side"
-      ></img>
     </Fragment>
   );
 }

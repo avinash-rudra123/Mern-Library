@@ -30,12 +30,8 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    resetToken: {
-      type: String,
-    },
-    tokenExpiration: {
-      type: Date,
-    },
+    resetToken:String,
+    expireToken:Date,
     bookIssueInfo: [
       {
         book_info: {

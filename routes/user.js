@@ -1,6 +1,6 @@
 const express = require("express");
 const { check } = require("express-validator");
-// const crypto = require("crypto");
+const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 // const nodemailer = require("nodemailer");
@@ -12,12 +12,58 @@ const Book = require("../models/book");
 const issueUser = require("../models/issue");
 const Handle = require("../models/handleSchema");
 const { auth, checkRole } = require("../middleware/authenticate");
+const mailgun = require("mailgun-js");
+const DOMAIN = "sandbox47f073c58f6c460cb419c48f3f04579c.mailgun.org";
+const mg = mailgun({
+  apiKey: "30f969092e70c955ec43bfed87113182-2fbe671d-6dcf082d",
+  domain: DOMAIN,
+});
 const {
   forgetPassword,
   resetPassword,
   changePassowrd,
 } = require("../controller/auth");
 const router = express.Router();
+router.post(
+  "/reset-password",
+  [check("email", "Please include a valid email").isEmail()],
+
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const EMAIL = "http://localhost:3000";
+    crypto.randomBytes(32, (err, buffer) => {
+      if (err) {
+        console.log(err);
+      }
+      const token = buffer.toString("hex");
+      User.findOne({ email: req.body.email }).then((user) => {
+        if (!user) {
+          return res
+            .status(422)
+            .json({ error: "User dont exists with that email" });
+        }
+        user.resetToken = token;
+        user.expireToken = Date.now() + 3600000;
+        user.save().then((result) => {
+          mg.messages().send({
+            from: "noreply@gmail.com",
+            to: user.email,
+
+            subject: "password reset",
+            html: `
+                  <p>You requested for password reset</p>
+                  <h5>click in this <a href="${EMAIL}/reset/${token}">link</a> to reset password</h5>
+                  `,
+          });
+          res.json({ message: "check your email" });
+        });
+      });
+    });
+  }
+);
 router.post(
   "/signup",
   [
@@ -30,7 +76,12 @@ router.post(
   ],
   validateSchema,
   async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, confirm_password } = req.body;
+    if (password !== confirm_password) {
+      return res.status(400).json({
+        msg: "password doesnt match Plz type correct password",
+      });
+    }
 
     try {
       let user = await User.findOne({ email });
@@ -71,8 +122,12 @@ router.post(
   ],
   validateSchema,
   async (req, res) => {
-    const { name, email, password } = req.body;
-
+    const { name, email, password, confirm_password } = req.body;
+    if (password !== confirm_password) {
+      return res.status(400).json({
+        msg: "password doesnt match Plz type correct password",
+      });
+    }
     try {
       let user = await User.findOne({ email });
 
@@ -167,7 +222,9 @@ router.post(
     }
 
     const { email, password } = req.body;
-
+    if (!email || !password) {
+      return res.status(422).json({ error: "please add all the fields" });
+    }
     try {
       let user = await User.findOne({ email });
 
@@ -196,7 +253,7 @@ router.post(
           throw err;
         }
         console.log(user, token);
-        res.json({ token, user });
+        res.json({ token, payload });
       });
     } catch (err) {
       console.error(err.message);
@@ -204,6 +261,14 @@ router.post(
     }
   }
 );
+router.get("/user/:id", async (req, res) => {
+  try {
+    const user = await Book.findById(req.params.id);
+    return res.json(user);
+  } catch (err) {
+    return res.status(404).send("err");
+  }
+});
 router.post("/issueBook/:book_id/book/:user_id", async (req, res) => {
   try {
     const findBook = await Book.findById(req.params.book_id);
@@ -357,14 +422,41 @@ router.get("/list/book", async (req, res) => {
     res.status(404).json(err);
   }
 });
-router.put("/update/books/:id", async (req, res) => {
+router.put(
+  "/update/books/:id",
+  [
+    body("title", "Please include a valid Title").notEmpty(),
+    body("ISBN", "ISBN is NUMBER").notEmpty().isNumeric(),
+    body("stock", "stock is NUMBER").notEmpty().isNumeric(),
+    body("description", "description is string")
+      .notEmpty()
+      .isString()
+      .isLength(40),
+    body("category", "category is string").notEmpty().isString(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      const admin = await Book.findByIdAndUpdate(req.params.id, req.body);
+      return res.status(201).json(admin);
+    } catch (err) {
+      res.status(400).json({
+        msg: err,
+      });
+    }
+  }
+);
+router.get("/books/issue/:user_id", async (req, res) => {
   try {
-    const admin = await Book.findByIdAndUpdate(req.params.id, req.body);
-    return res.status(201).json(admin);
+    const user = await User.findById(req.params.user_id);
+    const issue = await issueUser.find({ "user_id.id": user._id });
+    console.log(issue);
+    res.json(issue);
   } catch (err) {
-    res.status(400).json({
-      msg: err,
-    });
+    res.json("error occurred");
   }
 });
 router.delete("/delete/books/:id", async (req, res) => {
@@ -500,6 +592,34 @@ router.get("/logout", auth, (req, res) => {
     if (err) res.send(err);
     res.json({ message: "User looged out!" });
   });
+});
+router.get("/admin/logout", auth, (req, res) => {
+  User.findOneAndUpdate(req.user._id, { token: "" }, function (err) {
+    if (err) res.send(err);
+    res.json({ message: "User looged out!" });
+  });
+});
+
+router.post("/new-password", (req, res) => {
+  const newPassword = req.body.password;
+  const sentToken = req.body.token;
+  User.findOne({ resetToken: sentToken })
+    .then((user) => {
+      if (!user) {
+        return res.status(422).json({ error: "Try again session expired" });
+      }
+      bcrypt.hash(newPassword, 12).then((hashedpassword) => {
+        user.password = hashedpassword;
+        user.resetToken = undefined;
+        user.expireToken = undefined;
+        user.save().then((saveduser) => {
+          res.json({ message: "password updated success" });
+        });
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 router.get("/user/:page", userController.getUserDashboard);
 router.post("/books/:book_id/issue/:user_id", userController.postIssueBook);

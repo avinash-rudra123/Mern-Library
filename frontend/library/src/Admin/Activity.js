@@ -36,9 +36,11 @@ class Activity extends Component {
               return (
                 <tr key={i}>
                   <td>{c.info.title}</td>
+
                   <td>{c.time.issueDate}</td>
                   <td>{c.time.returnDate}</td>
                   <td>{c.entryTime}</td>
+                  <td>{c.user_id.name}</td>
                 </tr>
               );
             })}

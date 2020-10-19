@@ -1,153 +1,177 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Adminsignup } from "../auth/index";
-import Img from "../Img/img.jpg";
-const AdminSignup = () => {
-  const [values, setValues] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmpassword: "",
-    error: "",
-    success: false,
+import React, { Component, Fragment } from "react";
+import { Adminregister } from "../auth/index";
+import DashBoard from "../DashBoard/DashBoard";
+import { Link, withRouter } from "react-router-dom";
+const emailRegex = RegExp(
+  /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+);
+const formValid = ({ formErrors, ...rest }) => {
+  let valid = true;
+  Object.values(formErrors).forEach((val) => {
+    val.length > 0 && (valid = false);
   });
-  const { name, email, password, confirmpassword, error, success } = values;
-  const handleChange = (name) => (event) => {
-    setValues({ ...values, error: false, [name]: event.target.value });
-  };
-  const onSubmit = (e) => {
-    e.preventDefault();
-    if (password !== confirmpassword) {
-      setValues({
-        ...values,
-        error: "password and confirm password doesnot match",
-      });
-      return;
+  Object.values(rest).forEach((val) => {
+    val === null && (valid = false);
+  });
+
+  return valid;
+};
+class AdminSignUp extends Component {
+  constructor() {
+    super();
+    this.state = {
+      name: null,
+      email: null,
+      password: null,
+      confirm_password: null,
+      formErrors: {
+        name: "",
+        email: "",
+        password: "",
+        confirm_password: "",
+      },
+    };
+    this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+  }
+  onChange = (e) => {
+    const { name, value } = e.target;
+    let formErrors = { ...this.state.formErrors };
+
+    switch (name) {
+      case "name":
+        formErrors.name =
+          value.length < 3 ? "minimum 3 characaters required" : "";
+        break;
+      case "email":
+        formErrors.email = emailRegex.test(value)
+          ? ""
+          : "invalid email address";
+        break;
+      case "password":
+        formErrors.password =
+          value.length < 6 ? "minimum 6 characaters required" : "";
+        break;
+      case "confirm_password":
+        formErrors.confirm_password =
+          value.length < 6 ? "minimum 6 characaters required" : "";
+        break;
+      default:
+        break;
     }
-    Adminsignup({ name, email, password })
-      .then((data) => {
-        if (data.error) {
-          setValues({ ...values, error: data.error, success: false });
-        } else {
-          setValues({
-            ...values,
-            name: "",
-            email: "",
-            password: "",
-            error: "",
-            success: true,
-          });
-        }
-      })
-      .catch(console.log(error, "error occured in signup"));
+    this.setState({ formErrors, [name]: value }, () => console.log(this.state));
   };
-  const signUpForm = () => {
+  onSubmit = (e) => {
+    e.preventDefault();
+    if (formValid(this.state)) {
+      console.log(`
+        --SUBMITTING--
+        userName: ${this.state.userName}
+        Email: ${this.state.email}
+        Password: ${this.state.password}
+        Confirm_Password: ${this.state.confirm_password}
+      `);
+    } else {
+      console.error("FORM INVALID - DISPLAY ERROR MESSAGE");
+    }
+    const newUser = {
+      name: this.state.name,
+      email: this.state.email,
+      password: this.state.password,
+      confirm_password: this.state.confirm_password,
+    };
+    console.log(newUser);
+
+    Adminregister(newUser).then((res) => {
+      if (res) {
+        this.props.history.push("/admin/login");
+      } else {
+        alert("Registration failed plz chk the email and passwords");
+      }
+    });
+    this.setState({
+      email: "",
+      password: "",
+    });
+  };
+  render() {
+    const { formErrors } = this.state;
     return (
-      <div>
-        <form onSubmit={onSubmit}>
-          <h5 className="font-weight-primary">Admin Register</h5>
-          <input
-            type="text"
-            onChange={handleChange("name")}
-            value={name}
-            className="form-control bg-light mt-3 text-primary"
-            name="name"
-            placeholder="Enter your full name"
-            id="name"
-            required
-          />
-          <input
-            type="email"
-            onChange={handleChange("email")}
-            value={email}
-            className="form-control bg-light mt-3 text-dark"
-            name="email"
-            placeholder="Enter your email"
-            id="email"
-            required
-          />
-          <input
-            onChange={handleChange("password")}
-            value={password}
-            className="form-control bg-light mt-3 text-primary"
-            placeholder="Enter a password"
-            type="password"
-            name="password"
-            id="password"
-            required
-          />
-          <input
-            type="password"
-            onChange={handleChange("confirmpassword")}
-            value={confirmpassword}
-            className="form-control bg-light mt-3 text-primary"
-            placeholder="Confirm Password"
-            id="confirm_password"
-            name="confirmpassword"
-            required
-          />
-
-          <button
-            className="btn btn-sm btn-dark mt-3"
-            id="button"
-            type="submit"
-          >
-            Admin Register
-          </button>
-        </form>
-      </div>
-    );
-  };
-
-  const successMessage = () => {
-    return (
-      <div
-        className="alert alert-success mt-2"
-        style={{ display: success ? "" : "none" }}
-      >
-        New account was created successfully. Please
-        <Link to="/admin/login">Login Here</Link>
-      </div>
-    );
-  };
-
-  const errorMessage = () => {
-    return (
-      <div
-        className="alert alert-danger mt-2"
-        style={{ display: error ? "" : "none" }}
-      >
-        {error}
-      </div>
-    );
-  };
-
-  return (
-    <div className="row" style={{ height: "100%", width: "100%" }}>
-      <div className="col-md-4 left bg-light">
-        <div className="container">
-          <div className="row text-primary mt-5">
-            <div className="col-9 offset-2">
-              {signUpForm()}
-              {errorMessage()}
-              {successMessage()}
-
-              <p className="mt-2 text-dark">
-                Already a Have Account?
-                <a href="/admin/login" className="text-primary ml-2">
-                  Login
-                </a>
-              </p>
+      <Fragment>
+        <DashBoard></DashBoard>
+        <div className="wrapper">
+          <div className="form-wrapper">
+            <div className="col-md-6 mt-5 mx-auto">
+              <form noValidate onSubmit={this.onSubmit}>
+                <h1 className="h3 mb-3 font-weight-normal">Admin-Register</h1>
+                <div className="name">
+                  <label htmlFor="userName">Name</label>
+                  <input
+                    className={formErrors.name.length > 0 ? "error" : null}
+                    placeholder=" Name"
+                    type="text"
+                    name="name"
+                    noValidate
+                    onChange={this.onChange}
+                  />
+                  {formErrors.name.length > 0 && (
+                    <span className="errorMessage">{formErrors.name}</span>
+                  )}
+                </div>
+                <div className="form-group">
+                  <label htmlFor="email">Email address</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    name="email"
+                    placeholder="Enter email"
+                    onChange={this.onChange}
+                  />
+                  {formErrors.email.length > 0 && (
+                    <span className="errorMessage">{formErrors.email}</span>
+                  )}
+                </div>
+                <div className="form-group">
+                  <label htmlFor="password">Password</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    name="password"
+                    placeholder="Password"
+                    onChange={this.onChange}
+                  />
+                  {formErrors.password.length > 0 && (
+                    <span className="errorMessage">{formErrors.password}</span>
+                  )}
+                </div>
+                <div className="form-group">
+                  <label htmlFor="password">Confirm_password</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    name="confirm_password"
+                    placeholder="Confirm_password"
+                    onChange={this.onChange}
+                  />
+                  {formErrors.confirm_password.length > 0 && (
+                    <span className="errorMessage">
+                      {formErrors.confirm_password}
+                    </span>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  className="btn btn-lg btn-primary btn-block"
+                >
+                  Admin SignUp
+                </button>
+                <Link to="/admin/login">Admin login</Link>
+              </form>
             </div>
           </div>
         </div>
-      </div>
-      <div
-        className="col-md-8 lg text-info"
-        style={{ backgroundImage: `url(${Img})` }}
-      ></div>
-    </div>
-  );
-};
-
-export default AdminSignup;
+      </Fragment>
+    );
+  }
+}
+export default withRouter(AdminSignUp);

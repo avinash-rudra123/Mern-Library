@@ -1,134 +1,142 @@
-import React, { useState } from "react";
-import { Link, Redirect } from "react-router-dom";
-import { Adminlogin, authenticate, isAthunticated } from "../auth/index";
-import Img from "../Img/img.jpg";
-const AdminLogin = () => {
-  const [values, setValues] = useState({
-    email: "",
-    password: "",
-    error: "",
-    loading: false,
-    redirect: false,
+import React, { Component, Fragment } from "react";
+import { Adminlogin } from "../auth/index";
+import DashBoard from "../DashBoard/DashBoard";
+import { Link } from "react-router-dom";
+const emailRegex = RegExp(
+  /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+);
+const formValid = ({ formErrors, ...rest }) => {
+  let valid = true;
+  Object.values(formErrors).forEach((val) => {
+    val.length > 0 && (valid = false);
   });
-  const { email, password, error, loading, redirect } = values;
-  const handleChange = (name) => (event) => {
-    setValues({ ...values, error: false, [name]: event.target.value });
-  };
-  const onSubmit = (e) => {
+  Object.values(rest).forEach((val) => {
+    val === null && (valid = false);
+  });
+  return valid;
+};
+
+class AdminLogin extends Component {
+  constructor() {
+    super();
+    this.state = {
+      email: null,
+      password: null,
+      formErrors: {
+        email: "",
+        password: "",
+      },
+    };
+
+    this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+  }
+
+  onChange(e) {
     e.preventDefault();
-    Adminlogin({ email, password })
-      .then((data) => {
-        if (data.error) {
-          setValues({ ...values, error: data.error, loading: false });
-        } else {
-          authenticate(data, () => {
-            setValues({
-              ...values,
-              redirect: true,
-            });
-          });
-        }
-      })
-      .catch(console.log("signin requets failed"));
-  };
+    const { name, value } = e.target;
+    let formErrors = { ...this.state.formErrors };
 
-  const direct = () => {
-    if (redirect) {
-      return <Redirect to="/admin/dashboard/getbook" />;
+    switch (name) {
+      case "email":
+        formErrors.email = emailRegex.test(value)
+          ? ""
+          : "invalid email address";
+        break;
+      case "password":
+        formErrors.password =
+          value.length < 6 ? "minimum 6 characaters required" : "";
+        break;
+      default:
+        break;
     }
-  };
-  const loginForm = () => {
-    return (
-      <div>
-        <form onSubmit={onSubmit}>
-          <h5 className="font-weight-primary">Admin Login</h5>
-          <input
-            type="email"
-            onChange={handleChange("email")}
-            value={email}
-            className="form-control bg-light mt-3 text-dark"
-            name="email"
-            placeholder="Enter your email"
-            id="email"
-            required
-          />
-          <input
-            onChange={handleChange("password")}
-            value={password}
-            className="form-control bg-light mt-3 text-primary"
-            placeholder="Enter a password"
-            type="password"
-            name="password"
-            id="password"
-            required
-          />
 
-          <button
-            className="btn btn-sm btn-dark mt-3"
-            id="button"
-            type="submit"
-          >
-            Admin Login
-          </button>
-        </form>
-      </div>
-    );
-  };
-  const loadingMessage = () => {
-    return (
-      loading && (
-        <div className="d-flex justify-content-center mt-2">
-          <div class="spinner-border text-primary" role="status">
-            <span class="sr-only">Loading...</span>
-          </div>
-        </div>
-      )
-    );
-  };
+    this.setState({ formErrors, [name]: value }, () => console.log(this.state));
+  }
+  onSubmit(e) {
+    e.preventDefault();
+    if (formValid(this.state)) {
+      console.log(`
+        --SUBMITTING--
+        Email: ${this.state.email}
+        Password: ${this.state.password}
+      `);
+    } else {
+      console.error("FORM INVALID - DISPLAY ERROR MESSAGE");
+    }
+    const user = {
+      email: this.state.email,
+      password: this.state.password,
+    };
 
-  const errorMessage = () => {
+    Adminlogin(user).then((res) => {
+      if (res) {
+        this.props.history.push(`/admin/dashboard/getbook`);
+      } else {
+        alert("sigin request failed ");
+      }
+    });
+  }
+  render() {
+    const { formErrors } = this.state;
     return (
-      <div
-        className="alert alert-danger mt-2"
-        style={{ display: error ? "" : "none" }}
-      >
-        {error}
-      </div>
-    );
-  };
-
-  return (
-    <div className="row" style={{ height: "100%", width: "100%" }}>
-      <div className="col-md-4 left bg-light">
-        <div className="container">
-          <div className="row text-primary mt-5">
-            <div className="col-9 offset-2">
-              {loadingMessage()}
-              {loginForm()}
-              {errorMessage()}
-              {direct()}
-              <div className="mt-2 text-dark">
-                <div className="mt-2 text-dark">
-                  <Link to="/forget" className="text-primary">
-                    Forget Password ?
-                  </Link>
+      <Fragment>
+        <DashBoard></DashBoard>
+        <div className="wrapper">
+          <div className="form-wrapper">
+            <div className="col-md-6 mt-5 mx-auto">
+              <form noValidate onSubmit={this.onSubmit}>
+                <div className="email">
+                  <label htmlFor="email">Email</label>
+                  <input
+                    className={formErrors.email.length > 0 ? "error" : null}
+                    placeholder="Email"
+                    type="email"
+                    name="email"
+                    noValidate
+                    onChange={this.onChange}
+                  />
+                  {formErrors.email.length > 0 && (
+                    <span className="errorMessage">{formErrors.email}</span>
+                  )}
                 </div>
-                <div className="mt-1">
-                  New Admin?
-                  <Link to="/admin/login" className="text-primary ml-2">
+                <div className="password">
+                  <label htmlFor="password">Password</label>
+                  <input
+                    className={formErrors.password.length > 0 ? "error" : null}
+                    placeholder="Password"
+                    type="password"
+                    name="password"
+                    noValidate
+                    onChange={this.onChange}
+                  />
+                  {formErrors.password.length > 0 && (
+                    <span className="errorMessage">{formErrors.password}</span>
+                  )}
+                </div>
+                <button type="submit" className="btn btn-sm btn-primary ">
+                  Sign in
+                </button>
+                <Link to="/admin/signup">
+                  <button type="submit" className="btn m-2 btn-sm btn-primary ">
                     Admin Register
-                  </Link>
-                </div>
-              </div>
+                  </button>
+                </Link>
+                {/* <Link to="/reset">
+                  <button
+                    type="submit"
+                    className="btn m-2 btn-sm btn-primary  "
+                  >
+                    Forget Password
+                  </button>
+                </Link> */}
+              </form>
             </div>
           </div>
         </div>
-      </div>
-      <div
-        className="col-md-8 lg text-info"
-        style={{ backgroundImage: `url(${Img})` }}
-      ></div>
-    </div>
-  );
-};
+      </Fragment>
+    );
+  }
+}
+
 export default AdminLogin;

@@ -1,5 +1,7 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { createProduct } from "../auth/index";
+import AdminDashBoard from "./AdminDashBoard";
+import { Link } from "react-router-dom";
 class Create extends Component {
   constructor() {
     super();
@@ -35,79 +37,93 @@ class Create extends Component {
   };
   render() {
     return (
-      <div className="wrapper">
-        <div className="form-wrapper">
-          <div className="col-md-6 mt-5 mx-auto">
-            <form onSubmit={this.onSubmit}>
-              <h1 className="h3 mb-3 font-weight-normal">CREATE Book</h1>
-              <div className="form-group">
-                <label htmlFor="title">Title</label>
-                <input
-                  type="text"
-                  name="title"
-                  placeholder="Enter Title name"
-                  onChange={this.onChange}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="ISBN">ISBN</label>
-                <input
-                  type="text"
-                  name="ISBN"
-                  placeholder="Enter ISBN"
-                  onChange={this.onChange}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="author">Author</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="author"
-                  placeholder="Enter author name"
-                  onChange={this.onChange}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="description">Description</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="description"
-                  placeholder="Description"
-                  onChange={this.onChange}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="description">Category</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="category"
-                  placeholder="category"
-                  onChange={this.onChange}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="description">Stock</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="stock"
-                  placeholder="Enter Stock"
-                  onChange={this.onChange}
-                />
-              </div>
-              <button
-                type="submit"
-                className="btn btn-lg btn-primary btn-block"
-              >
-                CREATE Book
-              </button>
-            </form>
+      <Fragment>
+        <AdminDashBoard />
+        <div className="wrapper">
+          <div className="form-wrapper">
+            <div className="col-md-6 mt-5 mx-auto">
+              <form onSubmit={this.onSubmit}>
+                <h1 className="h3 mb-3 font-weight-normal">CREATE Book</h1>
+                <div className="form-group">
+                  <label htmlFor="title">Title</label>
+                  <input
+                    type="text"
+                    name="title"
+                    placeholder="Enter Title name"
+                    required
+                    onChange={this.onChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="ISBN">ISBN</label>
+                  <input
+                    type="text"
+                    name="ISBN"
+                    placeholder="Enter ISBN"
+                    onChange={this.onChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="author">Author</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="author"
+                    placeholder="Enter author name"
+                    onChange={this.onChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="description">Description</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="description"
+                    placeholder="Description"
+                    onChange={this.onChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="description">Category</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="category"
+                    placeholder="category"
+                    onChange={this.onChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="description">Stock</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="stock"
+                    placeholder="Enter Stock"
+                    onChange={this.onChange}
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="btn btn-lg btn-primary btn-block"
+                >
+                  CREATE Book
+                </button>
+                <Link to="/admin/dashboard/getbook">
+                  <button type="button" className="btn btn-light m-3">
+                    Cancel
+                  </button>
+                </Link>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
+      </Fragment>
     );
   }
 }

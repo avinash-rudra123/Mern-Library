@@ -5,6 +5,7 @@ const fs = require("fs");
 const _ = require("loadsh");
 const { auth } = require("../middleware/authenticate");
 const { checkRole } = require("../middleware/Admin");
+const { validationResult, body } = require("express-validator");
 const Book = require("../models/book");
 const Activity = require("../models/handleSchema");
 const router = express.Router();
@@ -46,24 +47,33 @@ router.post("/admin/add/books", (req, res) => {
     });
   });
 });
-router.post("/book/add", async (req, res) => {
-  const {
-    title,
-    ISBN,
-    available,
-    author,
-    description,
-    category,
-    photo,
-  } = req.body;
-  try {
-    let bookCreate = new Book(req.body);
-    const booksaved = await bookCreate.save();
-    return res.status(201).json(booksaved);
-  } catch (err) {
-    return res.status(404).json({ msg: "Not created" });
+router.post(
+  "/book/add",
+  [
+    body("title", "Please include a valid Title").notEmpty(),
+    body("ISBN", "ISBN is NUMBER").notEmpty().isNumeric(),
+    body("stock", "stock is NUMBER").notEmpty().isNumeric(),
+    body("description", "description is string")
+      .notEmpty()
+      .isString()
+      .isLength(40),
+    body("category", "category is string").notEmpty().isString(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { title, ISBN, stock, author, description, category } = req.body;
+    try {
+      let bookCreate = new Book(req.body);
+      const booksaved = await bookCreate.save();
+      return res.status(201).json(booksaved);
+    } catch (err) {
+      return res.status(404).json({ msg: "Not created" });
+    }
   }
-});
+);
 router.get("/book/:id", async (req, res) => {
   try {
     const bookById = await Book.findById(req.params.id);
@@ -157,5 +167,21 @@ router.get("/activity", async (req, res) => {
     return res.status(404).json("not found");
     console.log(err);
   }
+});
+router.get("/books/search", (req, res) => {
+  const searchfield = req.query.title;
+  Book.find({ title: { $regex: searchfield, $options: "$i" } }).then(
+    (result) => {
+      return res.status(200).json(result);
+    }
+  );
+});
+router.get("/admin/books/search", (req, res) => {
+  const searchfield = req.query.title;
+  Book.find({ title: { $regex: searchfield, $options: "$i" } }).then(
+    (result) => {
+      return res.status(200).json(result);
+    }
+  );
 });
 module.exports = router;

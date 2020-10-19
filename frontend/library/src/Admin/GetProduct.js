@@ -1,12 +1,14 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import axios from "axios";
+import AdminDashBoard from "./AdminDashBoard";
 import { Link } from "react-router-dom";
-import TableRow from "./TableRow";
+// import TableRow from "./TableRow";
+import { Table, Form, Container, Button } from "react-bootstrap";
 class GetProduct extends Component {
   constructor(props) {
     super(props);
     this.state = { book: [] };
-    this.bookRow = this.bookRow.bind(this);
+    this.deleteItemHandler = this.deleteItemHandler.bind(this);
   }
   componentDidMount() {
     axios
@@ -18,98 +20,154 @@ class GetProduct extends Component {
         console.log(error);
       });
   }
+  // bookRow() {
+  //   return this.state.book.map((Object, i) => {
+  //     return (
+  //       <TableRow obj={Object} deleteItem={this.deleteItemHandler} key={i} />
+  //     );
+  //   });
+  // }
+  search(key) {
+    console.warn(key);
+    this.setState({ lastSearch: key });
+    fetch("/api/admin/books/search/?title=" + key).then((data) => {
+      data.json().then((resp) => {
+        console.warn("resp", resp);
+        if (resp.length > 0) {
+          this.setState({ searchData: resp, noData: false });
+        } else {
+          this.setState({ noData: true, searchData: null });
+        }
+      });
+    });
+  }
   deleteItemHandler = (id) => {
     const updated = this.state.book.filter((book) => book._id !== id);
     console.log(updated);
     this.setState({ book: updated });
   };
-  bookRow() {
-    return this.state.book.map((Object, i) => {
-      return (
-        <TableRow obj={Object} deleteItem={this.deleteItemHandler} key={i} />
-      );
-    });
-  }
-
   render() {
     return (
-      <div>
-        <div>
-          <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
-            <Link className="navbar-brand" to="/admin/dashboard/getbook">
-              Library ManageMent
-            </Link>
-            <Link className="navbar-brand m-4" to="/admin/dashboard/create">
-              Create
-            </Link>
-            <Link className="navbar-brand m-4" to="/activity">
-              ActivityLog
-            </Link>
-            <button
-              className="navbar-toggler"
-              type="button"
-              data-toggle="collapse"
-              data-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div
-              className="collapse navbar-collapse dashboard"
-              id="navbarSupportedContent"
-            >
-              <form class="form-inline my-2 my-lg-0">
-                <input
-                  class="form-control mr-sm-2"
-                  type="search"
-                  placeholder="Search"
-                  aria-label="Search"
-                />
-                <button
-                  class="btn btn-outline-success my-2 my-sm-0"
-                  type="submit"
-                >
-                  Search
-                </button>
-                <Link className="navbar-brand m-4" to="/admin/login">
-                  <button
-                    onClick={() =>
-                      axios
-                        .get("/api/logout")
-                        .then((response) =>
-                          localStorage.removeItem("jwt", response.data)
-                        )
-                        .catch((err) => {
-                          console.log(err);
-                        })
-                    }
-                  >
-                    Logout
-                  </button>
-                </Link>
-              </form>
-            </div>
-          </nav>
-        </div>
-        <h3 align="center">Book INFORMATION</h3>
-        <table className="table table-striped" style={{ marginTop: 20 }}>
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>ISBN</th>
-              <th>Author</th>
-              <th>Description</th>
-              <th>Category</th>
-              <th>Stock</th>
-              <th>Issue</th>
-              <th>Return</th>
-            </tr>
-          </thead>
-          <tbody>{this.bookRow()}</tbody>
-        </table>
-      </div>
+      <Fragment>
+        <AdminDashBoard />
+        <Container>
+          <h1>Book Search</h1>
+
+          <Form.Control
+            type="text"
+            onChange={(event) => this.search(event.target.value)}
+            placeholder="Search Book....."
+          />
+          <div>
+            {this.state.searchData ? (
+              <div>
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>ISBN</th>
+                      <th>Author</th>
+                      <th>Description</th>
+                      <th>Category</th>
+                      <th>Stock</th>
+                      <th>Edit</th>
+                      <th>Delete</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.searchData.map((item, i) => (
+                      <tr key={i}>
+                        <td>{item.title}</td>
+                        <td>{item.ISBN}</td>
+                        <td>{item.author}</td>
+                        <td>{item.description}</td>
+                        <td>{item.category}</td>
+                        <td>{item.stock}</td>
+                        <td>
+                          <Link
+                            to={"/api/update/books/" + item._id}
+                            className="btn btn-primary"
+                          >
+                            Edit
+                          </Link>
+                        </td>
+                        <td>
+                          <button
+                            onClick={() =>
+                              axios
+                                .delete("/api/delete/books/" + item._id)
+                                .then(() => this.deleteItemHandler(item._id))
+                                .catch((err) =>
+                                  console.log(err, "eror occurred")
+                                )
+                            }
+                            className="btn btn-danger"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+            ) : (
+              <div>
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>ISBN</th>
+                      <th>Author</th>
+                      <th>Description</th>
+                      <th>Category</th>
+                      <th>Stock</th>
+                      <th>Edit</th>
+                      <th>Delete</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.book.map((item, i) => (
+                      <tr key={i}>
+                        <td>{item.title}</td>
+                        <td>{item.ISBN}</td>
+                        <td>{item.author}</td>
+                        <td>{item.description}</td>
+                        <td>{item.category}</td>
+                        <td>{item.stock}</td>
+                        <td>
+                          <Link
+                            to={"/api/update/books/" + item._id}
+                            className="btn btn-primary"
+                          >
+                            Edit
+                          </Link>
+                        </td>
+                        <td>
+                          <Button
+                            onClick={() =>
+                              axios
+                                .delete("/api/delete/books/" + item._id)
+                                .then(() => this.deleteItemHandler(item._id))
+                                .catch((err) =>
+                                  console.log(err, "eror occurred")
+                                )
+                            }
+                            className="btn btn-danger"
+                          >
+                            Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+            )}
+            {this.state.noData ? <h3>No Data Found</h3> : null}
+          </div>
+        </Container>
+      </Fragment>
     );
   }
 }

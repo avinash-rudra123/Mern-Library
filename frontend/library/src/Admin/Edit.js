@@ -19,6 +19,26 @@ class Edit extends Component {
   onChange = (event) => {
     this.setState({ [event.target.name]: event.target.value });
   };
+  componentDidMount() {
+    const id = this.props.match.params.id;
+    axios
+      .get(`/api/user/${id}`)
+      .then((res) => {
+        console.log(res.data);
+        this.setState({
+          title: res.data.title,
+          ISBN: res.data.ISBN,
+          author: res.data.author,
+          description: res.data.description,
+          category: res.data.category,
+          stock: res.data.stock,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   onSubmit(e) {
     e.preventDefault();
     const user = {
@@ -37,6 +57,7 @@ class Edit extends Component {
   }
 
   render() {
+    const { title, ISBN, author, description, category, stock } = this.state;
     return (
       <div className="wrapper">
         <div className="form-wrapper">
@@ -49,6 +70,7 @@ class Edit extends Component {
                   type="text"
                   name="title"
                   placeholder="Enter Title name"
+                  value={title}
                   onChange={this.onChange}
                 />
               </div>
@@ -57,6 +79,7 @@ class Edit extends Component {
                 <input
                   type="text"
                   name="ISBN"
+                  value={ISBN}
                   placeholder="Enter ISBN"
                   onChange={this.onChange}
                 />
@@ -67,6 +90,7 @@ class Edit extends Component {
                   type="text"
                   className="form-control"
                   name="author"
+                  value={author}
                   placeholder="Enter author name"
                   onChange={this.onChange}
                 />
@@ -77,6 +101,7 @@ class Edit extends Component {
                   type="text"
                   className="form-control"
                   name="description"
+                  value={description}
                   placeholder="Description"
                   onChange={this.onChange}
                 />
@@ -87,6 +112,7 @@ class Edit extends Component {
                   type="text"
                   className="form-control"
                   name="category"
+                  value={category}
                   placeholder="category"
                   onChange={this.onChange}
                 />
@@ -97,6 +123,7 @@ class Edit extends Component {
                   type="number"
                   className="form-control"
                   name="stock"
+                  value={stock}
                   placeholder="Enter Stock"
                   onChange={this.onChange}
                 />

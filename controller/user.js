@@ -61,7 +61,7 @@ exports.postIssueBook = async (req, res, next) => {
         },
         user_id: {
           id: user._id,
-          username: user.username,
+          name: user.name,
         },
       });
       user.bookIssueInfo.push(book._id);
@@ -78,7 +78,7 @@ exports.postIssueBook = async (req, res, next) => {
         },
         user_id: {
           id: user._id,
-          username: user.username,
+          name: user.name,
         },
       });
       await issue.save();
