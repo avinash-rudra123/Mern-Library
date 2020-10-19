@@ -64,6 +64,7 @@ class TableRow extends Component {
             {" "}
             <button
               className="btn btn-info"
+              disabled
               onClick={() => {
                 let user_id = localStorage.getItem("id");
                 console.log(user_id);

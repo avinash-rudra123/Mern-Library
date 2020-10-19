@@ -252,7 +252,8 @@ router.post(
         if (err) {
           throw err;
         }
-        console.log(user, token);
+        const id = payload.user.id;
+        console.log({ id, token });
         res.json({ token, payload });
       });
     } catch (err) {
@@ -300,8 +301,8 @@ router.post("/issueBook/:book_id/book/:user_id", async (req, res) => {
         category: "Issue",
         time: {
           id: issue._id,
-          issueDate: issue.book_info.issueDate,
-          returnDate: issue.book_info.returnDate,
+          issueDate: issue.book_info.issueDate.ISODate(),
+          returnDate: issue.book_info.returnDate.ISODate(),
         },
         user_id: {
           id: userInfo._id,

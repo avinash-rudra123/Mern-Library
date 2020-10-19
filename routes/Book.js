@@ -56,7 +56,7 @@ router.post(
     body("description", "description is string")
       .notEmpty()
       .isString()
-      .isLength(40),
+      .isLength(10),
     body("category", "category is string").notEmpty().isString(),
   ],
   async (req, res) => {

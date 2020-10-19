@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { Button } from "react-bootstrap";
 class Mybook extends Component {
   constructor(props) {
     super(props);
@@ -17,6 +18,10 @@ class Mybook extends Component {
         console.log(error);
       });
   }
+  logout = () => {
+    localStorage.clear("token");
+    this.props.history.push("/");
+  };
   render() {
     return (
       <Fragment>
@@ -47,14 +52,20 @@ class Mybook extends Component {
               </li>
             </ul>
             <ul className="navbar-nav mr-auto ">
-              <li className="nav-item">
-                <Link className="nav-link f-1" to="/login">
+              <li className="nav-item m-4">
+                <Button className="btn btn-info" onClick={this.logout}>
                   Logout
-                </Link>
+                </Button>
               </li>
             </ul>
           </div>
         </nav>
+        <Link to="/user/dashboard">
+          {" "}
+          <button type="button" class="btn btn-info">
+            Go-Back
+          </button>{" "}
+        </Link>
         <h2 align="center">User Issue Book</h2>
         <table
           className="table table-striped"

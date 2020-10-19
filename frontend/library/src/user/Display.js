@@ -6,7 +6,6 @@ class Display extends Component {
   constructor(props) {
     super(props);
     this.state = { book: [], searchData: null, noData: false, lastSearch: "" };
-    // this.tabRow = this.tabRow.bind(this);
   }
   componentWillMount() {
     axios
@@ -300,7 +299,7 @@ class Display extends Component {
                 </Table>
               </div>
             )}
-            {this.state.noData ? <h3>No Data Found</h3> : null}
+            {this.state.noData ? <h3>NO Book Found.......</h3> : null}
           </div>
         </Container>
       </div>

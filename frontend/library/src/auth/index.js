@@ -64,7 +64,7 @@ export const Adminlogin = async (user) => {
       password: user.password,
     })
     .then((response) => {
-      localStorage.setItem("token", response.data);
+      localStorage.setItem("token", response.data.token);
       localStorage.setItem("id", response.data.id);
       return response.data;
     })
@@ -84,4 +84,9 @@ export const createProduct = (formdata) => {
       stock: formdata.stock,
     })
     .then((response) => console.log(response.data));
+};
+export const signup = async (user) => {
+  return await axios
+    .post("/api/signup", user)
+    .then((response) => response.data);
 };

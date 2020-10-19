@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react";
 import axios from "axios";
+import AdminDashBoard from "./AdminDashBoard";
 class Activity extends Component {
   constructor(props) {
     super(props);
@@ -18,6 +19,7 @@ class Activity extends Component {
   render() {
     return (
       <Fragment>
+        <AdminDashBoard />
         <h2 align="center"> Activity LOG</h2>
         <table
           className="table table-striped"
@@ -29,6 +31,7 @@ class Activity extends Component {
               <th>ReturnDate</th>
               <th>issueDate</th>
               <th>Entry-Date</th>
+              <th>Name</th>
             </tr>
           </thead>
           <tbody>
