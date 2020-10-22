@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route, HashRouter } from "react-router-dom";
 import Dashboard from "./DashBoard/DashBoard";
 import SignUp from "./user/SignUp";
 import Login from "./user/Login";
@@ -13,6 +13,7 @@ import AdminLogin from "./auth/AdminLogin";
 import Activity from "./Admin/Activity";
 import Reset from "./user/Reset";
 import NewPassword from "./user/NewPassword";
+import Message from "./Admin/Message";
 import "./App.css";
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/admin/login" exact component={AdminLogin} />
         <Route path="/mybooks" exact component={Mybook} />
         <Route path="/activity" exact component={Activity} />
+        <Route path="/message" exact component={Message} />
         <Route path="/user/dashboard" component={Display} />
         <Route path="/reset" component={Reset} />
         <Route path="/newpassword" component={NewPassword} />

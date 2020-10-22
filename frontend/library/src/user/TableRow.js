@@ -34,7 +34,7 @@ class TableRow extends Component {
                   });
               }}
             >
-              Issue
+              ReqBook
             </button>
             {/* </form> */}
           </td>

@@ -27,11 +27,6 @@ const handleSchema = new mongoose.Schema({
     name: String,
   },
 
-  fine: {
-    amount: Number,
-    date: Date,
-  },
-
   entryTime: {
     type: Date,
     default: Date.now(),

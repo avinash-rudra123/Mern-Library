@@ -8,6 +8,7 @@ const { checkRole } = require("../middleware/Admin");
 const { validationResult, body } = require("express-validator");
 const Book = require("../models/book");
 const Activity = require("../models/handleSchema");
+const Issue = require("../models/issue");
 const router = express.Router();
 router.post("/admin/add/books", (req, res) => {
   let form = new formidable.IncomingForm();
@@ -168,6 +169,15 @@ router.get("/activity", async (req, res) => {
     console.log(err);
   }
 });
+router.get("/issue", async (req, res) => {
+  try {
+    const activty = await Issue.find({});
+    return res.json(activty);
+  } catch (err) {
+    return res.status(404).json("not found");
+    console.log(err);
+  }
+});
 router.get("/books/search", (req, res) => {
   const searchfield = req.query.title;
   Book.find({ title: { $regex: searchfield, $options: "$i" } }).then(
@@ -184,4 +194,5 @@ router.get("/admin/books/search", (req, res) => {
     }
   );
 });
+
 module.exports = router;

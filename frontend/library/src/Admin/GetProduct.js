@@ -3,6 +3,7 @@ import axios from "axios";
 import AdminDashBoard from "./AdminDashBoard";
 import { Link } from "react-router-dom";
 // import TableRow from "./TableRow";
+import swal from "sweetalert";
 import { Table, Form, Container, Button } from "react-bootstrap";
 class GetProduct extends Component {
   constructor(props) {
@@ -20,13 +21,6 @@ class GetProduct extends Component {
         console.log(error);
       });
   }
-  // bookRow() {
-  //   return this.state.book.map((Object, i) => {
-  //     return (
-  //       <TableRow obj={Object} deleteItem={this.deleteItemHandler} key={i} />
-  //     );
-  //   });
-  // }
   search(key) {
     console.warn(key);
     this.setState({ lastSearch: key });
@@ -93,14 +87,35 @@ class GetProduct extends Component {
                         </td>
                         <td>
                           <button
-                            onClick={() =>
+                            onClick={() => {
                               axios
                                 .delete("/api/delete/books/" + item._id)
-                                .then(() => this.deleteItemHandler(item._id))
-                                .catch((err) =>
-                                  console.log(err, "eror occurred")
-                                )
-                            }
+                                .then(() => {
+                                  swal({
+                                    title: "Are you sure?",
+                                    text: "You want to delete this book?",
+                                    icon: "warning",
+                                    buttons: true,
+                                    dangerMode: true,
+                                  })
+                                    .then((willdelete) => {
+                                      if (willdelete) {
+                                        axios
+                                          .delete(
+                                            "/api/delete/books/" + item._id
+                                          )
+                                          .then(() => {
+                                            this.deleteItemHandler(item._id);
+                                          });
+                                      } else {
+                                        swal("Your book is safe!");
+                                      }
+                                    })
+                                    .catch((err) =>
+                                      console.log(err, "eror occurred")
+                                    );
+                                });
+                            }}
                             className="btn btn-danger"
                           >
                             Delete
@@ -145,14 +160,35 @@ class GetProduct extends Component {
                         </td>
                         <td>
                           <Button
-                            onClick={() =>
+                            onClick={() => {
                               axios
                                 .delete("/api/delete/books/" + item._id)
-                                .then(() => this.deleteItemHandler(item._id))
-                                .catch((err) =>
-                                  console.log(err, "eror occurred")
-                                )
-                            }
+                                .then(() => {
+                                  swal({
+                                    title: "Are you sure?",
+                                    text: "You want to delete this book?",
+                                    icon: "warning",
+                                    buttons: true,
+                                    dangerMode: true,
+                                  })
+                                    .then((willdelete) => {
+                                      if (willdelete) {
+                                        axios
+                                          .delete(
+                                            "/api/delete/books/" + item._id
+                                          )
+                                          .then(() => {
+                                            this.deleteItemHandler(item._id);
+                                          });
+                                      } else {
+                                        swal("Your book is safe!");
+                                      }
+                                    })
+                                    .catch((err) =>
+                                      console.log(err, "eror occurred")
+                                    );
+                                });
+                            }}
                             className="btn btn-danger"
                           >
                             Delete
@@ -164,7 +200,7 @@ class GetProduct extends Component {
                 </Table>
               </div>
             )}
-            {this.state.noData ? <h3>No Data Found</h3> : null}
+            {this.state.noData ? <h3>No Book Found</h3> : null}
           </div>
         </Container>
       </Fragment>

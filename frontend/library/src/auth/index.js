@@ -66,6 +66,7 @@ export const Adminlogin = async (user) => {
     .then((response) => {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("id", response.data.id);
+      localStorage.setItem("role", response.data.role);
       return response.data;
     })
     .catch((err) => {

@@ -66,7 +66,7 @@ class Mybook extends Component {
             Go-Back
           </button>{" "}
         </Link>
-        <h2 align="center">User Issue Book</h2>
+        <h2 align="center">User Requested Book</h2>
         <table
           className="table table-striped"
           style={{ marginTop: 20, backgroundColor: "grey" }}
@@ -74,19 +74,16 @@ class Mybook extends Component {
           <thead>
             <tr>
               <th>Title</th>
-              <th>Author</th>
-              <th>issueDate</th>
-              <th>ReturnDate</th>
+              <th>Cancel</th>
             </tr>
           </thead>
           <tbody>
             {this.state.mybook.map((c, i) => {
+              // const date = c.book_info.issueDate.split("T");
               return (
                 <tr key={i}>
                   <td>{c.book_info.title}</td>
-                  <td>{c.book_info.author}</td>
-                  <td>{c.book_info.issueDate}</td>
-                  <td>{c.book_info.returnDate}</td>
+                  <td>{c.book_info.cancel}</td>
                 </tr>
               );
             })}

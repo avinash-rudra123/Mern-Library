@@ -28,21 +28,25 @@ class Activity extends Component {
           <thead>
             <tr>
               <th>Title</th>
-              <th>ReturnDate</th>
               <th>issueDate</th>
+              <th>ReturnDate</th>
               <th>Entry-Date</th>
               <th>Name</th>
             </tr>
           </thead>
           <tbody>
             {this.state.activity.map((c, i) => {
+              const date = c.time.issueDate.split("T");
+              const date2 = c.time.returnDate.split("T");
+              const date3 = c.entryTime.split("T");
+              const date4 = date3[1].split(".");
               return (
                 <tr key={i}>
                   <td>{c.info.title}</td>
 
-                  <td>{c.time.issueDate}</td>
-                  <td>{c.time.returnDate}</td>
-                  <td>{c.entryTime}</td>
+                  <td>{date[0]}</td>
+                  <td>{date2[0]}</td>
+                  <td>{date4[0]}</td>
                   <td>{c.user_id.name}</td>
                 </tr>
               );

@@ -5,19 +5,25 @@ import { Table, Form, Container, Button } from "react-bootstrap";
 class Display extends Component {
   constructor(props) {
     super(props);
-    this.state = { book: [], searchData: null, noData: false, lastSearch: "" };
+    this.state = {
+      book: [],
+      searchData: null,
+      noData: false,
+      lastSearch: "",
+      disabled: [],
+    };
   }
   componentWillMount() {
     axios
       .get("/api/list/book")
       .then((response) => {
+        console.log(response.data);
         this.setState({ book: response.data });
       })
       .catch(function (error) {
         console.log(error);
       });
   }
-
   search(key) {
     console.warn(key);
     this.setState({ lastSearch: key });
@@ -32,11 +38,6 @@ class Display extends Component {
       });
     });
   }
-  // tabRow() {
-  //   return this.state.book.map((Object, i) => {
-  //     return <TableRow obj={Object} key={i} />;
-  //   });
-  // }
   logout = () => {
     localStorage.clear("token");
     this.props.history.push("/");
@@ -102,13 +103,14 @@ class Display extends Component {
                       <th>Description</th>
                       <th>Category</th>
                       <th>Stock</th>
-                      <th>Issue</th>
+                      <th> ReqBook</th>
                       <th>Return</th>
+                      <th>Renew</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {this.state.searchData.map((item) => (
-                      <tr>
+                    {this.state.searchData.map((item, i) => (
+                      <tr key={i}>
                         <td>{item.title}</td>
                         <td>{item.ISBN}</td>
                         <td>{item.author}</td>
@@ -117,8 +119,15 @@ class Display extends Component {
                         <td>{item.stock}</td>
                         <td>
                           <button
+                            key={item._id}
+                            disabled={
+                              this.state.disabled.indexOf(item._id) !== -1
+                            }
                             className="btn btn-success"
                             onClick={() => {
+                              this.setState({
+                                disabled: [...this.state.disabled, item._id],
+                              });
                               let user_id = localStorage.getItem("id");
                               console.log(user_id);
                               axios
@@ -127,7 +136,8 @@ class Display extends Component {
                                 )
                                 .then((response) => {
                                   console.log(response.data);
-                                  alert("Issue book successfully");
+
+                                  alert("Req book successfully");
                                 })
                                 .catch((err) => {
                                   console.log(err);
@@ -137,7 +147,7 @@ class Display extends Component {
                                 });
                             }}
                           >
-                            Issue
+                            ReqBook
                           </button>
                           {/* </form> */}
                         </td>
@@ -205,7 +215,7 @@ class Display extends Component {
                       <th>Description</th>
                       <th>Category</th>
                       <th>Stock</th>
-                      <th>Issue</th>
+                      <th>ReqBook</th>
                       <th>Return</th>
                       <th>Renew</th>
                     </tr>
@@ -221,8 +231,15 @@ class Display extends Component {
                         <td>{item.stock}</td>
                         <td>
                           <button
+                            key={item._id}
+                            disabled={
+                              this.state.disabled.indexOf(item._id) !== -1
+                            }
                             className="btn btn-success"
                             onClick={() => {
+                              this.setState({
+                                disabled: [...this.state.disabled, item._id],
+                              });
                               let user_id = localStorage.getItem("id");
                               console.log(user_id);
                               axios
@@ -231,7 +248,7 @@ class Display extends Component {
                                 )
                                 .then((response) => {
                                   console.log(response.data);
-                                  alert("Issue book successfully");
+                                  alert("Request book successfully");
                                 })
                                 .catch((err) => {
                                   console.log(err);
@@ -241,7 +258,7 @@ class Display extends Component {
                                 });
                             }}
                           >
-                            Issue
+                            ReqBook
                           </button>
                           {/* </form> */}
                         </td>

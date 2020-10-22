@@ -1,144 +1,107 @@
-import React, { Component, Fragment } from "react";
+import React, { Fragment } from "react";
+import { useFormik } from "formik";
 import { login } from "../auth/index";
-import DashBoard from "../DashBoard/DashBoard";
 import { Link } from "react-router-dom";
-const emailRegex = RegExp(
-  /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-);
-const formValid = ({ formErrors, ...rest }) => {
-  let valid = true;
-  Object.values(formErrors).forEach((val) => {
-    val.length > 0 && (valid = false);
+import * as Yup from "yup";
+import DashBoard from "../DashBoard/DashBoard";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+const Login = ({ history }) => {
+  const validationSchema = Yup.object().shape({
+    email: Yup.string()
+      .email()
+      .max(50, "Email cannot exceeded with 50")
+      .required("Email is Required."),
+    password: Yup.string()
+      .required(" Password is Required.")
+      .min(6, "Password is too short - should be 6 chars minimum.")
+      .matches(/(?=.*[0-9])/, "Password must contain a number."),
   });
-  Object.values(rest).forEach((val) => {
-    val === null && (valid = false);
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+
+    validationSchema: validationSchema,
+
+    onSubmit: (values) => {
+      const user = {
+        email: values.email,
+        password: values.password,
+      };
+
+      login(user)
+        .then((res) => {
+          if (res) {
+            history.push(`/user/dashboard`);
+            toast.success("Login successfully");
+          }
+        })
+        .catch((err) => toast.error("Login failed"));
+    },
   });
-  return valid;
-};
+  return (
+    <Fragment>
+      <DashBoard />
+      <ToastContainer />
+      <div className="container">
+        <div className="row">
+          <div className="col-md-6 mt-5 mx-auto">
+            <form noValidate onSubmit={formik.handleSubmit}>
+              <h1 className="h3 mb-3 font-weight-normal">Login</h1>
 
-class LoginValidation extends Component {
-  constructor() {
-    super();
-    this.state = {
-      email: null,
-      password: null,
-      formErrors: {
-        email: "",
-        password: "",
-      },
-    };
-
-    this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-  }
-
-  onChange(e) {
-    e.preventDefault();
-    const { name, value } = e.target;
-    let formErrors = { ...this.state.formErrors };
-
-    switch (name) {
-      case "email":
-        formErrors.email = emailRegex.test(value)
-          ? ""
-          : "invalid email address";
-        break;
-      case "password":
-        formErrors.password =
-          value.length < 6 ? "minimum 6 characaters required" : "";
-        break;
-      default:
-        break;
-    }
-
-    this.setState({ formErrors, [name]: value }, () => console.log(this.state));
-  }
-  onSubmit(e) {
-    e.preventDefault();
-    if (formValid(this.state)) {
-      console.log(`
-        --SUBMITTING--
-        Email: ${this.state.email}
-        Password: ${this.state.password}
-      `);
-    } else {
-      console.error("FORM INVALID - DISPLAY ERROR MESSAGE");
-    }
-    const user = {
-      email: this.state.email,
-      password: this.state.password,
-    };
-
-    login(user).then((res) => {
-      if (res) {
-        this.props.history.push(`/user/dashboard`);
-      } else {
-        alert("sigin request failed ");
-      }
-    });
-  }
-  render() {
-    const { formErrors } = this.state;
-    return (
-      <Fragment>
-        <DashBoard></DashBoard>
-        <div className="wrapper">
-          <div className="form-wrapper">
-            <div className="col-md-6 mt-5 mx-auto">
-              <form noValidate onSubmit={this.onSubmit}>
-                <div className="email">
-                  <label htmlFor="email">Email</label>
-                  <input
-                    className={formErrors.email.length > 0 ? "error" : null}
-                    placeholder="Email"
-                    type="email"
-                    name="email"
-                    noValidate
-                    required
-                    onChange={this.onChange}
-                  />
-                  {formErrors.email.length > 0 && (
-                    <span className="errorMessage">{formErrors.email}</span>
-                  )}
-                </div>
-                <div className="password">
-                  <label htmlFor="password">Password</label>
-                  <input
-                    className={formErrors.password.length > 0 ? "error" : null}
-                    placeholder="Password"
-                    type="password"
-                    name="password"
-                    required
-                    noValidate
-                    onChange={this.onChange}
-                  />
-                  {formErrors.password.length > 0 && (
-                    <span className="errorMessage">{formErrors.password}</span>
-                  )}
-                </div>
-                <button type="submit" className="btn btn-sm btn-primary ">
-                  Sign in
-                </button>
-                <Link to="/signup">
-                  <button type="submit" className="btn m-2 btn-sm btn-primary ">
-                    Register
-                  </button>
-                </Link>
-                <Link to="/reset">
-                  <button
-                    type="submit"
-                    className="btn m-2 btn-sm btn-primary  "
-                  >
-                    Forget Password
-                  </button>
-                </Link>
-              </form>
-            </div>
+              <div className="form-group">
+                <label htmlFor="email">Email address</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  name="email"
+                  placeholder="Enter email"
+                  value={formik.values.email}
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                />
+                {formik.errors.email && formik.touched.email && (
+                  <div className="input-feedback">
+                    <span style={{ color: "red" }}>{formik.errors.email}</span>
+                  </div>
+                )}
+              </div>
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  name="password"
+                  placeholder="Password"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                {formik.errors.password && formik.touched.password && (
+                  <div className="input-feedback">
+                    {" "}
+                    <span style={{ color: "red" }}>
+                      {formik.errors.password}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <button
+                type="submit"
+                className="btn btn-lg btn-primary btn-block"
+              >
+                Login
+              </button>
+            </form>
+            ;<Link to="/signup">Register ? if dont have Account</Link>
           </div>
         </div>
-      </Fragment>
-    );
-  }
-}
+      </div>
+    </Fragment>
+  );
+};
 
-export default LoginValidation;
+export default Login;

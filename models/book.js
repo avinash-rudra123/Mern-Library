@@ -10,6 +10,8 @@ const bookSchema = new mongoose.Schema({
     data: Buffer,
     contentType: String,
   },
+  cancel: String,
+  issued: String,
 });
 
 module.exports = mongoose.model("Book", bookSchema);

@@ -44,6 +44,12 @@ class AdminDashBoard extends Component {
                   Logout
                 </Button>
               </li>
+              <Link to="/message">
+                <i
+                  className="fa fa-bell m-4 w-30 p-3 h-30"
+                  aria-hidden="true"
+                ></i>
+              </Link>
             </ul>
           </div>
         </nav>

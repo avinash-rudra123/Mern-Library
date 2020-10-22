@@ -3,10 +3,11 @@ const { check } = require("express-validator");
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-// const nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer");
 const validateSchema = require("../middleware/user");
 const { validationResult, body } = require("express-validator");
 const userController = require("../controller/user");
+const authController = require("../controller/auth");
 const User = require("../models/user");
 const Book = require("../models/book");
 const issueUser = require("../models/issue");
@@ -199,6 +200,7 @@ router.post(
           throw err;
         }
         const id = payload.user.id;
+        const role = user.role;
         res.status(201).json({ id, token });
       });
     } catch (err) {
@@ -220,7 +222,6 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(422).json({ error: "please add all the fields" });
@@ -244,7 +245,7 @@ router.post(
       const payload = {
         user: {
           id: user.id,
-          user: user.role,
+          role: user.role,
         },
       };
 
@@ -253,8 +254,9 @@ router.post(
           throw err;
         }
         const id = payload.user.id;
+        const role = payload.user.role;
         console.log({ id, token });
-        res.json({ token, payload });
+        res.json({ token, id, role });
       });
     } catch (err) {
       console.error(err.message);
@@ -626,4 +628,9 @@ router.get("/user/:page", userController.getUserDashboard);
 router.post("/books/:book_id/issue/:user_id", userController.postIssueBook);
 router.post("/books/:book_id/renew/:user_id", userController.postRenewBook);
 router.post("/books/:book_id/return/:user_id", userController.postReturnBook);
+router.post("/notify/:book_id/issue/:user_id", userController.notification);
+// router.post("/cancel/:book_id/req/:user_id", userController.cancelrequest);
+router.get("/cancel/:user_id", userController.getCancel);
+router.post("/cancel", userController.cancel);
+
 module.exports = router;
