@@ -74,7 +74,7 @@ class Mybook extends Component {
           <thead>
             <tr>
               <th>Title</th>
-              <th>Cancel</th>
+              <th>Author</th>
             </tr>
           </thead>
           <tbody>
@@ -83,7 +83,7 @@ class Mybook extends Component {
               return (
                 <tr key={i}>
                   <td>{c.book_info.title}</td>
-                  <td>{c.book_info.cancel}</td>
+                  <td>{c.book_info.author}</td>
                 </tr>
               );
             })}
