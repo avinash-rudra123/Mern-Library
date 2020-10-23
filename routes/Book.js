@@ -125,11 +125,11 @@ router.get("/", async (req, res) => {
 router.get("/books", (req, res) => {
   let order = req.query.order ? req.query.order : "asc";
   let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
-  let limit = req.query.limit ? parseInt(req.query.limit) : 6;
+  //let limit = req.query.limit ? parseInt(req.query.limit) : 6;
   Book.find()
     .select("-photo")
     .sort([[sortBy, order]])
-    .limit(limit)
+    //.limit(limit)
     .exec((err, book) => {
       if (err) {
         return res.status(404).json({ msg: "Book not found" });

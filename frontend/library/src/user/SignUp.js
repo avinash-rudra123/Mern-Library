@@ -1,16 +1,17 @@
 import React, { Fragment } from "react";
-import { useFormik, ErrorMessage } from "formik";
+import { useFormik } from "formik";
 import { register } from "../auth/index";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import "bootstrap/dist/css/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
 import * as Yup from "yup";
 import DashBoard from "../DashBoard/DashBoard";
 const SignUp = ({ history }) => {
   const validationSchema = Yup.object().shape({
     name: Yup.string()
-      .required(" Name is Required.")
-      .min(3, " Name is Too Short."),
+      .min(3, " Name is Too Short.")
+      .required(" Name is Required."),
     email: Yup.string().email().required("Email is Required."),
     password: Yup.string()
       .required("Password is Required.")
@@ -42,12 +43,11 @@ const SignUp = ({ history }) => {
 
       register(newUser)
         .then((res) => {
-          toast.success("Registration successfully");
+          toast.success("Registration successfully", history.push("/login"));
         })
         .catch((err) => toast.error("Registration failed"));
     },
   });
-
   return (
     <Fragment>
       <DashBoard />

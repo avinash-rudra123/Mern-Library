@@ -39,7 +39,7 @@ const Login = ({ history }) => {
             toast.success("Login successfully");
           }
         })
-        .catch((err) => toast.error("Login failed"));
+        .catch((err) => alert("Login failed"));
     },
   });
   return (

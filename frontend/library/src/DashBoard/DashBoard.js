@@ -36,11 +36,14 @@ function DashBoard() {
               <Fragment>
                 <li className="nav-item">
                   <Link className="nav-link" to="/signup">
-                    User Sign-Up
+                    <i className="fad fa-user-plus"> User-Sign-Up</i>
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/login">
+                  <Link
+                    className="nav-link glyphicon glyphicon-log-in"
+                    to="/login"
+                  >
                     User Login
                   </Link>
                 </li>

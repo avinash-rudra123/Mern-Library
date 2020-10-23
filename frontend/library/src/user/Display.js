@@ -12,6 +12,8 @@ class Display extends Component {
       lastSearch: "",
       disabled: [],
     };
+    this.sortby = this.sortby.bind(this);
+    this.compareBy = this.compareBy.bind(this);
   }
   componentWillMount() {
     axios
@@ -24,6 +26,21 @@ class Display extends Component {
         console.log(error);
       });
   }
+
+  compareBy(key) {
+    return function (a, b) {
+      if (a[key] < b[key]) return -1;
+      if (a[key] > b[key]) return 1;
+      return 0;
+    };
+  }
+
+  sortby(key) {
+    let arrayCopy = [...this.state.book];
+    arrayCopy.sort(this.compareBy(key));
+    this.setState({ book: arrayCopy });
+  }
+
   search(key) {
     console.warn(key);
     this.setState({ lastSearch: key });
@@ -94,15 +111,15 @@ class Display extends Component {
           <div>
             {this.state.searchData ? (
               <div>
-                <Table striped bordered hover>
+                <Table striped bordered hover className="sortable">
                   <thead>
                     <tr>
-                      <th>Title</th>
+                      <th onClick={(e) => this.sortby("title")}>Title</th>
                       <th>ISBN</th>
-                      <th>Author</th>
+                      <th onClick={() => this.sortby("author")}>Author</th>
                       <th>Description</th>
                       <th>Category</th>
-                      <th>Stock</th>
+                      <th onClick={() => this.sortby("stock")}>Stock</th>
                       <th> ReqBook</th>
                       <th>Return</th>
                       <th>Renew</th>
@@ -206,15 +223,22 @@ class Display extends Component {
               </div>
             ) : (
               <div>
-                <Table striped bordered hover>
+                <Table
+                  striped
+                  bordered
+                  hover
+                  className="sortable table-bordered table-sortable"
+                >
                   <thead>
                     <tr>
-                      <th>Title</th>
+                      <th className="asc" onClick={() => this.sortby("title")}>
+                        Title
+                      </th>
                       <th>ISBN</th>
-                      <th>Author</th>
+                      <th onClick={() => this.sortby("author")}>Author</th>
                       <th>Description</th>
                       <th>Category</th>
-                      <th>Stock</th>
+                      <th onClick={() => this.sortby("stock")}>Stock</th>
                       <th>ReqBook</th>
                       <th>Return</th>
                       <th>Renew</th>

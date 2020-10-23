@@ -1,15 +1,18 @@
 import React, { Component, Fragment } from "react";
 import axios from "axios";
+
 import AdminDashBoard from "./AdminDashBoard";
 import { Link } from "react-router-dom";
-// import TableRow from "./TableRow";
 import swal from "sweetalert";
 import { Table, Form, Container, Button } from "react-bootstrap";
+
 class GetProduct extends Component {
   constructor(props) {
     super(props);
     this.state = { book: [] };
     this.deleteItemHandler = this.deleteItemHandler.bind(this);
+    this.sortby = this.sortby.bind(this);
+    this.compareBy = this.compareBy.bind(this);
   }
   componentDidMount() {
     axios
@@ -20,6 +23,20 @@ class GetProduct extends Component {
       .catch(function (error) {
         console.log(error);
       });
+  }
+
+  compareBy(key) {
+    return function (a, b) {
+      if (a[key] < b[key]) return -1;
+      if (a[key] > b[key]) return 1;
+      return 0;
+    };
+  }
+
+  sortby(key) {
+    let arrayCopy = [...this.state.book];
+    arrayCopy.sort(this.compareBy(key));
+    this.setState({ book: arrayCopy });
   }
   search(key) {
     console.warn(key);
@@ -41,6 +58,7 @@ class GetProduct extends Component {
     this.setState({ book: updated });
   };
   render() {
+    const book = this.state.book;
     return (
       <Fragment>
         <AdminDashBoard />
@@ -58,12 +76,12 @@ class GetProduct extends Component {
                 <Table striped bordered hover>
                   <thead>
                     <tr>
-                      <th>Title</th>
+                      <th onClick={() => this.sortby("title")}>Title</th>
                       <th>ISBN</th>
-                      <th>Author</th>
+                      <th onClick={() => this.sortby("author")}>Author</th>
                       <th>Description</th>
                       <th>Category</th>
-                      <th>Stock</th>
+                      <th onClick={() => this.sortby("author")}>Stock</th>
                       <th>Edit</th>
                       <th>Delete</th>
                     </tr>
@@ -131,12 +149,13 @@ class GetProduct extends Component {
                 <Table striped bordered hover>
                   <thead>
                     <tr>
-                      <th>Title</th>
+                      <th onClick={() => this.sortby("title")}>Title</th>
+
                       <th>ISBN</th>
-                      <th>Author</th>
+                      <th onClick={() => this.sortby("author")}>Author</th>
                       <th>Description</th>
                       <th>Category</th>
-                      <th>Stock</th>
+                      <th onClick={() => this.sortby("stock")}>Stock</th>
                       <th>Edit</th>
                       <th>Delete</th>
                     </tr>

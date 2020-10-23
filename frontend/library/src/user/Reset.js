@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 import DashBoard from "../DashBoard/DashBoard";
-import Formsy from "formsy-react";
 import axios from "axios";
 class Reset extends Component {
   constructor() {

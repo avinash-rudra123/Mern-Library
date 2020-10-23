@@ -31,7 +31,7 @@ const AdminLogin = ({ history }) => {
 
       Adminlogin(user)
         .then((res) => {
-          if (res.role == "superadmin") {
+          if (res.role === "superadmin") {
             history.push(`/admin/dashboard/getbook`);
           }
         })

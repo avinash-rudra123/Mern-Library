@@ -20,7 +20,7 @@ class NewPassword extends Component {
       password: this.state.password,
     };
     console.log(newUser);
-    if (this.state.password != this.state.confirm_password) {
+    if (this.state.password !== this.state.confirm_password) {
       return false;
     } else {
       const user = {
