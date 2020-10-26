@@ -10,10 +10,10 @@ const bookRoutes = require("./routes/Book");
 const adminRoutes = require("./routes/Admin");
 const app = express();
 require("dotenv").config();
-const mongourl =
-  "mongodb+srv://atlas123:ravi123@cluster0.ex4b5.mongodb.net/Library?retryWrites=true&w=majority";
+//const mongourl =
+//  "mongodb+srv://atlas123:ravi123@cluster0.ex4b5.mongodb.net/Library?retryWrites=true&w=majority";
 mongoose
-  .connect(mongourl, {
+  .connect(process.env.mongourl, {
     useUnifiedTopology: true,
     useNewUrlParser: true,
     useCreateIndex: true,
