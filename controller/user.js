@@ -271,7 +271,7 @@ exports.cancel = (req, res, next) => {
     service: "gmail",
     auth: {
       user: "gupta95031p@gmail.com",
-      pass: "@avi1L/#&&123",
+      pass: "",
     },
   });
 
